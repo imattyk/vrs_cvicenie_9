@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lsm6ds0.h"
+#include "hts221.h"
 uint8_t text_to_display[] = "____";
 /* USER CODE END Includes */
 
@@ -91,8 +92,10 @@ enum abeceda{
 
 /* USER CODE BEGIN PV */
 float mag[3], acc[3];
-uint8_t buffer;
-uint8_t data = 0;
+uint16_t buffer;
+int16_t temperature = 0;
+uint16_t humidity = 0;
+uint8_t status = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -147,6 +150,7 @@ int main(void)
   LL_TIM_EnableCounter(TIM2);
 
   lsm6ds0_init();
+  status = hts221_init();
 
    // VYPISUJEME TENTO RETAZEC, AKOKOLVEK DLHY, COKOLVEK V NOM JE, JE TO SPRAVENE DYNAMICKY, NIE HARDCODED
    uint8_t vypis[] = " MATEJ_KOMLOSI_85899   MAREK_MACZKO_92720 ";
@@ -182,11 +186,14 @@ int main(void)
 	*/
 	  	  //LL_mDelay(500);
 
-	  	  lsm6ds0_get_acc(acc, (acc+1), (acc+2));
-	  	  LL_mDelay(50);
+	  	  //lsm6ds0_get_acc(acc, (acc+1), (acc+2));
+	  	  //LL_mDelay(50);
 	  	  //i2c_master_write(0, 0x0F, 0x5F << 1, 0);
 
 	  	  //buffer = *(i2c_master_read(&data, 1, 0xf, 0xbe, 0));
+	  	  humidity = HTS221_Get_Humidity();
+	  	  temperature = HTS221_Get_Temperature();
+	  	  LL_mDelay(100);
   }
 
   /* USER CODE END 3 */
