@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "lsm6ds0.h"
 #include "hts221.h"
+#include "lps25hb.h"
 uint8_t text_to_display[] = "____";
 /* USER CODE END Includes */
 
@@ -95,6 +96,7 @@ float mag[3], acc[3];
 uint16_t buffer;
 int16_t temperature = 0;
 uint16_t humidity = 0;
+uint16_t pressure = 0;
 uint8_t status = 0;
 /* USER CODE END PV */
 
@@ -150,7 +152,8 @@ int main(void)
   LL_TIM_EnableCounter(TIM2);
 
   lsm6ds0_init();
-  status = hts221_init();
+  hts221_init();
+  status = lps25hb_init();
 
    // VYPISUJEME TENTO RETAZEC, AKOKOLVEK DLHY, COKOLVEK V NOM JE, JE TO SPRAVENE DYNAMICKY, NIE HARDCODED
    uint8_t vypis[] = " MATEJ_KOMLOSI_85899   MAREK_MACZKO_92720 ";
@@ -193,6 +196,7 @@ int main(void)
 	  	  //buffer = *(i2c_master_read(&data, 1, 0xf, 0xbe, 0));
 	  	  humidity = HTS221_Get_Humidity();
 	  	  temperature = HTS221_Get_Temperature();
+	  	  pressure = getPressure();
 	  	  LL_mDelay(100);
   }
 
