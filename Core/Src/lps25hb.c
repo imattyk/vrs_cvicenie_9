@@ -56,7 +56,7 @@ uint8_t lps25hb_init(void)
 	return status;
 }
 
-uint16_t getPressure(){
+uint16_t lps25hb_getPressure(){
 	uint8_t press_out_h = 0;
 	uint8_t press_out_l = 0;
 	uint8_t press_out_xl = 0;

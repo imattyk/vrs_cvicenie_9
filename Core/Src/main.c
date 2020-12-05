@@ -196,7 +196,7 @@ int main(void)
 	  	  //buffer = *(i2c_master_read(&data, 1, 0xf, 0xbe, 0));
 	  	  humidity = HTS221_Get_Humidity();
 	  	  temperature = HTS221_Get_Temperature();
-	  	  pressure = getPressure();
+	  	  pressure = lps25hb_getPressure();
 	  	  LL_mDelay(100);
   }
 
