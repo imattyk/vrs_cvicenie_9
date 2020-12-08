@@ -33,39 +33,25 @@ uint16_t HTS221_Get_Humidity()
 	uint8_t buffer[2];
 	int32_t tmp;
 	uint16_t value = 0;
-	/* 1. Read H0_rH and H1_rH coefficients*/
 
-	//read_register(0x30, buffer[0]);
-	//i2c_master_read(&buffer[0], 1, 0x30, 0xbe, 1);
-	//read_register(0x31, buffer[1]);
-	//i2c_master_read(&buffer[1], 1, 0x31, 0xbe, 1);
-	hts221_readArray(buffer, 0x30, 2);
+	/* 1. Read H0_rH and H1_rH coefficients*/
+	hts221_readArray(buffer, H0_RH_X2, 2);
 	H0_rh = buffer[0]>>1;
 	H1_rh = buffer[1]>>1;
 
 	/*2. Read H0_T0_OUT */
-	//read_register(0x36, buffer);
-	//i2c_master_read(&buffer[0], 1, 0x36, 0xbe, 1);
-	//read_register(0x37, buffer);
-	//i2c_master_read(&buffer[1], 1, 0x37, 0xbe, 1);
-	hts221_readArray(buffer, 0x36, 2);
+
+	hts221_readArray(buffer, H0_T0_OUT, 2);
 	H0_T0_out = (((uint16_t)buffer[1])<<8) | (uint16_t)buffer[0];
 
 	/*3. Read H1_T0_OUT */
-	//read_register(0x3A, buffer);
-	//i2c_master_read(&buffer[0], 1, 0x3A, 0xbe, 1);
-	//read_register(0x3B, buffer);
-	//i2c_master_read(&buffer[1], 1, 0x3B, 0xbe, 1);
-	hts221_readArray(buffer, 0x3A, 2);
+
+	hts221_readArray(buffer, H1_T0_OUT, 2);
 	H1_T0_out = (((uint16_t)buffer[1])<<8) | (uint16_t)buffer[0];
 
 	/*4. Read H_T_OUT */
 
-	//read_register(0x28, buffer);
-	//i2c_master_read(&buffer[0], 1, 0x28, 0xbe, 1);
-	//read_register(0x29, buffer);
-	//i2c_master_read(&buffer[1], 1, 0x29, 0xbe, 1);
-	hts221_readArray(buffer, 0x28, 2);
+	hts221_readArray(buffer, H_OUT, 2);
 
 	H_T_out = (((uint16_t)buffer[1])<<8) | (uint16_t)buffer[0];
 	/*5. Compute the RH [%] value by linear interpolation */
