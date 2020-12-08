@@ -28,6 +28,7 @@
 #include "lsm6ds0.h"
 #include "hts221.h"
 #include "lps25hb.h"
+#include "lis3mdl.h"
 uint8_t text_to_display[] = "____";
 /* USER CODE END Includes */
 
