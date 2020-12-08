@@ -12,22 +12,25 @@
 #endif /* INC_HTS221_H_ */
 
 enum HTS221_REG{
-	HSM221_DEVICE_ADDRESS	=	0x5F,
-	WHO_AM_I				=	0x0F,
-	WHO_AM_I_RESPONSE		=	0xBC,
-	T0_DEGC_REG				=	0x32,
-	T1_DEGC_REG				=	0x33,
-	MSB_T1_T0				=	0x35,
-	T1_OUT					=	0x3E,
-	T1_OUT_2				=	0x3F,
-	T0_OUT					= 	0x3C,
-	T0_OUT_2				=	0x3D,
-	T_OUT					=	0x2A,
-	T_OUT_2					=	0x2B,
-	H0_RH_X2				=	0x30,
-	H0_T0_OUT				=	0x36,
-	H1_T0_OUT				=	0x3A,
-	H_OUT					=	0x28,
+	HTS221_DEVICE_ADDRESS			=	0x5F,
+	HTS221_WHO_AM_I					=	0x0F,
+	HTS221_WHO_AM_I_RESPONSE		=	0xBC,
+	HTS221_T0_DEGC_REG				=	0x32,
+	HTS221_T1_DEGC_REG				=	0x33,
+	HTS221_MSB_T1_T0				=	0x35,
+	HTS221_T1_OUT					=	0x3E,
+	HTS221_T1_OUT_2					=	0x3F,
+	HTS221_T0_OUT					= 	0x3C,
+	HTS221_T0_OUT_2					=	0x3D,
+	HTS221_T_OUT					=	0x2A,
+	HTS221_T_OUT_2					=	0x2B,
+	HTS221_H0_RH_X2					=	0x30,
+	HTS221_H0_T0_OUT				=	0x36,
+	HTS221_H1_T0_OUT				=	0x3A,
+	HTS221_H_OUT					=	0x28,
+	HTS221_CTRL_REG1				=	0x20,
+	HTS221_CTRL_REG1_SETUP			=	0x81,	// 0b1000 0001
+	HTS221_STATUS_REG				=	0x27,
 };
 
 uint8_t hts221_read_byte(uint8_t reg_addr);

@@ -9,7 +9,7 @@
 #include <lps25hb.h>
 #include "i2c.h"
 
-uint8_t adress = 0xbb;
+uint8_t adress = LPS25HB_ADDR;
 
 uint8_t lps25hb_read_byte(uint8_t reg_addr)
 {
@@ -36,9 +36,9 @@ uint8_t lps25hb_init(void)
 
 	LL_mDelay(100);
 
-	uint8_t val = lps25hb_read_byte(WHO_AM_I);
+	uint8_t val = lps25hb_read_byte(LPS25HB_WHO_AM_I);
 
-	if(val == WHO_AM_I_RESPONSE)
+	if(val == LPS25HB_WHO_AM_I_RESPONSE)
 	{
 		status = 1;
 	}
@@ -49,9 +49,9 @@ uint8_t lps25hb_init(void)
 
 	//acc device init
 
-	lps25hb_write_byte(0x20, 0x90);
-	uint8_t device_status = lps25hb_read_byte(0x20);
-	uint8_t data_status = lps25hb_read_byte(0x27);
+	lps25hb_write_byte(LPS25HB_CTRL_REG1, LPS25HB_CTRL_REG1_SETUP);
+	uint8_t device_status = lps25hb_read_byte(LPS25HB_CTRL_REG1);
+	uint8_t data_status = lps25hb_read_byte(LPS25HB_STATUS_REG);
 
 	return status;
 }
@@ -61,9 +61,9 @@ uint16_t lps25hb_getPressure(){
 	uint8_t press_out_l = 0;
 	uint8_t press_out_xl = 0;
 
-	press_out_h = lps25hb_read_byte(0x2A);
-	press_out_l = lps25hb_read_byte(0x29);
-	press_out_xl = lps25hb_read_byte(0x28);
+	press_out_h = lps25hb_read_byte(LPS25HB_PRESS_OUT_H);
+	press_out_l = lps25hb_read_byte(LPS25HB_PRESS_OUT_L);
+	press_out_xl = lps25hb_read_byte(LPS25HB_PRESS_OUT_XL);
 
 	uint32_t temp = press_out_h << 16 | press_out_l << 8 | press_out_xl;
 	uint16_t pressure = temp/4096;
