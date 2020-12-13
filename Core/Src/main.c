@@ -97,7 +97,9 @@ float mag[3], acc[3];
 uint16_t buffer;
 int16_t temperature = 0;
 uint16_t humidity = 0;
-uint16_t pressure = 0;
+float pressure = 0;
+uint16_t altitude = 0;
+float azimut = 0;
 uint8_t status = 0;
 /* USER CODE END PV */
 
@@ -154,7 +156,9 @@ int main(void)
 
   lsm6ds0_init();
   hts221_init();
-  status = lps25hb_init();
+  lps25hb_init();
+  status = lis3mdl_init();
+  //
 
    // VYPISUJEME TENTO RETAZEC, AKOKOLVEK DLHY, COKOLVEK V NOM JE, JE TO SPRAVENE DYNAMICKY, NIE HARDCODED
    uint8_t vypis[] = " MATEJ_KOMLOSI_85899   MAREK_MACZKO_92720 ";
@@ -187,7 +191,7 @@ int main(void)
 	  	  if(index == 0){
 	  		  flag = 0;
 	  	  }
-	*/
+		*/
 	  	  //LL_mDelay(500);
 
 	  	  //lsm6ds0_get_acc(acc, (acc+1), (acc+2));
@@ -198,6 +202,9 @@ int main(void)
 	  	  humidity = HTS221_Get_Humidity();
 	  	  temperature = HTS221_Get_Temperature();
 	  	  pressure = lps25hb_getPressure();
+	  	  altitude = ((powf((1013.25/pressure),1/5.257)-1)*((float)temperature+273.15))/0.0065;
+	  	  azimut = lis3mdl_get_mag_z();
+	  	  //
 	  	  LL_mDelay(100);
   }
 

@@ -56,7 +56,7 @@ uint8_t lps25hb_init(void)
 	return status;
 }
 
-uint16_t lps25hb_getPressure(){
+float lps25hb_getPressure(){
 	uint8_t press_out_h = 0;
 	uint8_t press_out_l = 0;
 	uint8_t press_out_xl = 0;
@@ -65,8 +65,8 @@ uint16_t lps25hb_getPressure(){
 	press_out_l = lps25hb_read_byte(LPS25HB_PRESS_OUT_L);
 	press_out_xl = lps25hb_read_byte(LPS25HB_PRESS_OUT_XL);
 
-	uint32_t temp = press_out_h << 16 | press_out_l << 8 | press_out_xl;
-	uint16_t pressure = temp/4096;
+	float temp = press_out_h << 16 | press_out_l << 8 | press_out_xl;
+	float pressure = temp/4096;
 	return pressure;
 }
 
