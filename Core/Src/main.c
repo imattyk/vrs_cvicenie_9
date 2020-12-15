@@ -101,6 +101,7 @@ float pressure = 0;
 uint16_t altitude = 0;
 float azimut = 0;
 uint8_t status = 0;
+uint8_t button_state = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -157,14 +158,29 @@ int main(void)
   lsm6ds0_init();
   hts221_init();
   lps25hb_init();
-  status = lis3mdl_init();
+  lis3mdl_init();
   //
 
    // VYPISUJEME TENTO RETAZEC, AKOKOLVEK DLHY, COKOLVEK V NOM JE, JE TO SPRAVENE DYNAMICKY, NIE HARDCODED
-   uint8_t vypis[] = " MATEJ_KOMLOSI_85899   MAREK_MACZKO_92720 ";
+   char vypis[15];
 
    int index = 0;
    int flag = 0;
+
+   char mag_vypis[12];
+   char azimut_str[10];
+
+   char teplota_vypis[12];
+   char teplota_str[10];
+
+   char vlhkost_vypis[12];
+   char vlhkost_str[10];
+
+   char tlak_vypis[15];
+   char tlak_str[10];
+
+   char vyska_vypis[12];
+   char vyska_str[10];
 
   /* USER CODE END 2 */
 
@@ -176,8 +192,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  /*
-	  strncpy(text_to_display, &vypis[index], 4);
+
+	  	  strncpy(text_to_display, &vypis[index], 4);
 	  	  if(flag == 0){
 	  		  index++;
 	  	  }
@@ -185,13 +201,13 @@ int main(void)
 	  		  index--;
 	  	  }
 
-	  	  if(index == sizeof(vypis)-4){
+	  	  if(index == sizeof(vypis)-6){
 	  		  flag = 1;
 	  	  }
 	  	  if(index == 0){
 	  		  flag = 0;
 	  	  }
-		*/
+
 	  	  //LL_mDelay(500);
 
 	  	  //lsm6ds0_get_acc(acc, (acc+1), (acc+2));
@@ -199,13 +215,65 @@ int main(void)
 	  	  //i2c_master_write(0, 0x0F, 0x5F << 1, 0);
 
 	  	  //buffer = *(i2c_master_read(&data, 1, 0xf, 0xbe, 0));
+
 	  	  humidity = HTS221_Get_Humidity();
 	  	  temperature = HTS221_Get_Temperature();
 	  	  pressure = lps25hb_getPressure();
 	  	  altitude = ((powf((1013.25/pressure),1/5.257)-1)*((float)temperature+273.15))/0.0065;
 	  	  azimut = lis3mdl_get_mag_z();
-	  	  //
-	  	  LL_mDelay(100);
+
+	  	  switch(button_state){
+	  	  	case 0:
+	  	  	memset(mag_vypis, '\0',12);
+	  	  	gcvt(azimut, 5, azimut_str);
+	  	  	strcat(mag_vypis, " MAG_");
+	  	  	strcat(mag_vypis, azimut_str);
+	  	  	memset(vypis,'\0',15);
+	  	  	strcat(vypis, mag_vypis);
+	  		break;
+
+	  	  	case 1:
+	  	  	memset(teplota_vypis, '\0',12);
+	  	  	sprintf(teplota_str, "%d", temperature);
+	  	  	strcat(teplota_vypis, " TEMP_");
+	  	  	strncat(teplota_vypis, teplota_str, 2);
+	  	  	strcat(teplota_vypis, ".");
+	  	  	strncat(teplota_vypis, &teplota_str[2],1);
+	  	  	memset(vypis,'\0',15);
+	  	  	strcpy(vypis, teplota_vypis);
+	  	  	break;
+
+	  	  	case 2:
+	  	  	memset(vlhkost_vypis,'\0',12);
+	  	  	sprintf(vlhkost_str, "%d", humidity);
+	  	  	strcat(vlhkost_vypis, " HUM_");
+	  	  	strncat(vlhkost_vypis, vlhkost_str,2);
+	  	  	memset(vypis,'\0',15);
+	  	  	strcpy(vypis, vlhkost_vypis);
+	  	  	break;
+
+	  	  	case 3:
+	  	  	memset(tlak_vypis,'\0',15);
+	  	  	gcvt(pressure, 6, tlak_str);
+	  	  	strcat(tlak_vypis, " BAR_");
+	  	  	strcat(tlak_vypis, tlak_str);
+	  	  	memset(vypis,'\0',15);
+	  	  	strcpy(vypis, tlak_vypis);
+	  		break;
+
+	  	  	case 4:
+	  	  	memset(vyska_vypis, '\0',12);
+	  	  	sprintf(vyska_str, "%d", altitude);
+	  	  	strcat(vyska_vypis, " ALT_");
+	  	  	strcat(vyska_vypis, vyska_str);
+	  	  	memset(vypis,'\0',15);
+	  	  	strcpy(vypis, vyska_vypis);
+	  	  	break;
+	  	  }
+
+	  	  LL_mDelay(200);
+
+
   }
 
   /* USER CODE END 3 */
@@ -264,54 +332,60 @@ static char inverted_bin[8];
 		else if (bin[i] == '0'){inverted_bin[i] = 1;}
 	}
 
+	if(inverted_bin[1] == 1 && inverted_bin[2] == 1 && inverted_bin[3] == 1 && inverted_bin[4] == 1 && inverted_bin[5] == 1 && inverted_bin[6] == 0 && inverted_bin[7] == 1){
+		LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_1);
 
-	if(inverted_bin[1] == 1){
-		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_1);
-	}
-	if(inverted_bin[1] == 0){
-		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_1);
-	}
-	//--------------------------------------------------
-	if(inverted_bin[2] == 1){
-			LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_0);
+	}else{
+		LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_1);
+
+		if(inverted_bin[1] == 1){
+			LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_1);
 		}
-	if(inverted_bin[2] == 0){
-		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_0);
-	}
-	//--------------------------------------------------
-	if(inverted_bin[3] == 1){
-			LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_8);
-	}
-	if(inverted_bin[3] == 0){
-		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_8);
-	}
-	//--------------------------------------------------
-	if(inverted_bin[4] == 1){
-			LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_5);
-	}
-	if(inverted_bin[4] == 0){
-		LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_5);
-	}
-	//--------------------------------------------------
-	if(inverted_bin[5] == 1){
-			LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_11);
-	}
-	if(inverted_bin[5] == 0){
-		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_11);
-	}
-	//--------------------------------------------------
-	if(inverted_bin[6] == 1){
-			LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_3);
-	}
-	if(inverted_bin[6] == 0){
-		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_3);
-	}
-	//--------------------------------------------------
-	if(inverted_bin[7] == 1){
-			LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_4);
-	}
-	if(inverted_bin[7] == 0){
-		LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_4);
+		if(inverted_bin[1] == 0){
+			LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_1);
+		}
+		//--------------------------------------------------
+		if(inverted_bin[2] == 1){
+				LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_0);
+			}
+		if(inverted_bin[2] == 0){
+			LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_0);
+		}
+		//--------------------------------------------------
+		if(inverted_bin[3] == 1){
+				LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_8);
+		}
+		if(inverted_bin[3] == 0){
+			LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_8);
+		}
+		//--------------------------------------------------
+		if(inverted_bin[4] == 1){
+				LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_5);
+		}
+		if(inverted_bin[4] == 0){
+			LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_5);
+		}
+		//--------------------------------------------------
+		if(inverted_bin[5] == 1){
+				LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_11);
+		}
+		if(inverted_bin[5] == 0){
+			LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_11);
+		}
+		//--------------------------------------------------
+		if(inverted_bin[6] == 1){
+				LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_3);
+		}
+		if(inverted_bin[6] == 0){
+			LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_3);
+		}
+		//--------------------------------------------------
+		if(inverted_bin[7] == 1){
+				LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_4);
+		}
+		if(inverted_bin[7] == 0){
+			LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_4);
+		}
 	}
 
 	/*
@@ -330,9 +404,9 @@ static char inverted_bin[8];
 void turnON_digit(int seg1,int seg2, int seg3, int seg4)
 {
 	if (seg1 == 1){
-		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);
+		LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_0);
 	}else{
-		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
+		LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_0);
 	}
 	if (seg2 == 1){
 		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_4);
@@ -340,9 +414,9 @@ void turnON_digit(int seg1,int seg2, int seg3, int seg4)
 		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_4);
 	}
 	if (seg3 == 1){
-		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6);
+		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_12);
 	}else{
-		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6);
+		LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_12);
 	}
 	if (seg4 == 1){
 		LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_2);
@@ -506,6 +580,12 @@ unsigned short getCharNumber(uint8_t single_char){
 	if(single_char == ' '){
 		        return 0b0000000;
 		    }
+	if(single_char == '.'){
+		return 0b0000010;
+	}
+	if(single_char == '-'){
+		return 0b0000001;
+	}
 }
 
 void resetDigits(){
